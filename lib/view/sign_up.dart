@@ -15,6 +15,11 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _passVisible2 = false;
   final TextEditingController _passController = TextEditingController();
 
+bool isValidEmail(String email) {
+    final emailRegex =
+        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    return emailRegex.hasMatch(email);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -86,8 +91,9 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
+                  if (value == null || value.isEmpty||
+                      !isValidEmail(value)) {
+                    return 'Please enter a valid email';
                   }
                   return null;
                 },

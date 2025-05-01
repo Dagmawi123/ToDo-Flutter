@@ -1,16 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:hive_flutter/hive_flutter.dart';
-import 'package:todo_app/home.dart';
-import 'package:todo_app/view/login.dart';
-import 'package:todo_app/view/otp_entry.dart';
-import 'package:todo_app/view/recovery_password_entry.dart';
-import 'package:todo_app/view/reset_email_entry.dart';
-import 'package:todo_app/view/sign_up.dart';
-import 'package:firebase_core/firebase_core.dart'; 
+import 'package:flutter_bloc/flutter_bloc.dart'; 
+import 'package:todo_app/view/login.dart'; 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:todo_app/view_model/auth_bloc/auth_bloc.dart'; 
 import 'firebase_options.dart';
 void main() async {
-  await Hive.initFlutter();
-  await Hive.openBox("myBox");
+  // await Hive.initFlutter();
+  // await Hive.openBox("myBox");
+    WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp( options: DefaultFirebaseOptions.currentPlatform, );
   runApp(const MyApp());
 }
@@ -20,7 +17,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home:   RecoveryPasswordEntry(),
+      home:   BlocProvider(
+        create: (context) => AuthBloc(),
+        child: LoginPage(),
+      ),
       theme: ThemeData(
         primarySwatch: Colors.yellow, // Set the primary swatch color
       ),

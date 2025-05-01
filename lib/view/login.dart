@@ -1,10 +1,15 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_app/view_model/auth_bloc/auth_bloc.dart';
+import 'package:todo_app/view_model/auth_bloc/auth_event.dart';
+import 'package:todo_app/view_model/auth_bloc/auth_states.dart';
 
 class LoginPage extends StatefulWidget {
-  
-  const LoginPage({super.key});
+  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+  LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -13,7 +18,13 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _passVisible = false;
-
+  TextEditingController _emailController = TextEditingController();
+  TextEditingController _passwordController = TextEditingController();
+bool isValidEmail(String email) {
+    final emailRegex =
+        RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
+    return emailRegex.hasMatch(email);
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -26,10 +37,9 @@ class _LoginPageState extends State<LoginPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              
               Image.asset(
                 "assets/images/plan.png",
-                height: 200,
+                height: 80,
               ),
               const SizedBox(
                 height: 20,
@@ -60,6 +70,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: 20,
               ),
               TextFormField(
+                controller: _emailController,
                 decoration: InputDecoration(
                   prefixIcon: Icon(Icons.email),
                   hintText: "Enter your email",
@@ -68,8 +79,9 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter your email';
+                  if (value == null || value.isEmpty||
+                      !isValidEmail(value)) {
+                    return 'Please enter valid email';
                   }
                   return null;
                 },
@@ -78,6 +90,7 @@ class _LoginPageState extends State<LoginPage> {
                 height: 14,
               ),
               TextFormField(
+                controller: _passwordController,
                 obscureText: !_passVisible,
                 decoration: InputDecoration(
                   prefixIcon: const Icon(Icons.password),
@@ -121,19 +134,82 @@ class _LoginPageState extends State<LoginPage> {
               const SizedBox(
                 height: 10,
               ),
-              SizedBox(
-                  width: double.infinity,
-                  height: 50,
-                  child: ElevatedButton(
-                      onPressed: () {},
-                      child: Text("Login"),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
-                        foregroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(7),
-                        ),
-                      ))),
+              BlocConsumer<AuthBloc,AuthState>(builder: (context, state) {
+                if (state is AuthLoading) {
+                  return SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                          onPressed: () async {},
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(7),
+                            ),
+                          ),
+                          child: const Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                SizedBox(
+                                  width: 10,
+                                ),
+                                Text("Logging in...")
+                              ],
+                            ),
+                          )));
+                } else {
+                  return SizedBox(
+                      width: double.infinity,
+                      height: 50,
+                      child: ElevatedButton(
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate()) {
+                              BlocProvider.of<AuthBloc>(context).add(
+                                AuthLoginEvent(
+                                  email: _emailController.text,
+                                  password: _passwordController.text,
+                                ),
+                              );
+                            }
+                          },
+                          child: Text("Login"),
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(7),
+                            ),
+                          )));
+                }
+              }, listener: (context, state) {
+                if (state is AuthFailure) {
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                    content: Text(state.error),
+                    backgroundColor: Colors.red,
+                  ));
+                } else if (state is AuthSuccess) {
+                  showDialog(
+  context: context,
+  builder: (context) => AlertDialog(
+    title: Text("Login Successful"),
+    content: Text("Welcome back!"),
+    actions: [
+      TextButton(onPressed: () => Navigator.pop(context), child: Text("OK")),
+    ],
+  ),
+);
+
+                }
+              }),
               const Padding(
                 padding: EdgeInsets.symmetric(vertical: 10.0),
                 child: Text(
