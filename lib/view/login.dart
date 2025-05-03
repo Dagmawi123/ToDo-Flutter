@@ -1,14 +1,10 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart'; 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app/view_model/auth_bloc/auth_bloc.dart';
 import 'package:todo_app/view_model/auth_bloc/auth_event.dart';
 import 'package:todo_app/view_model/auth_bloc/auth_states.dart';
 
-class LoginPage extends StatefulWidget {
-  final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
+class LoginPage extends StatefulWidget { 
   LoginPage({super.key});
 
   @override
@@ -135,7 +131,7 @@ bool isValidEmail(String email) {
                 height: 10,
               ),
               BlocConsumer<AuthBloc,AuthState>(builder: (context, state) {
-                if (state is AuthLoading) {
+                if (state is AuthSignInLoading) {
                   return SizedBox(
                       width: double.infinity,
                       height: 50,
@@ -181,14 +177,14 @@ bool isValidEmail(String email) {
                               );
                             }
                           },
-                          child: Text("Login"),
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color.fromARGB(255, 0, 0, 0),
                             foregroundColor: Colors.white,
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(7),
                             ),
-                          )));
+                          ),
+                          child: const Text("Login")));
                 }
               }, listener: (context, state) {
                 if (state is AuthFailure) {
