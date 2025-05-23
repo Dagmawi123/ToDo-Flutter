@@ -34,3 +34,9 @@ class AuthResetFailure extends AuthState {
 }
 class AuthResetEmailSent extends AuthState { 
 }
+class AuthResetEmailVerified extends AuthState { 
+}
+class AuthResetEmailUnverified extends AuthState { 
+  final String error;
+  AuthResetEmailUnverified({required this.error});
+}

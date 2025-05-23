@@ -40,5 +40,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthResetFailure(error: e.toString()));
       }
     });
+  on<AuthPinVerifyEvent>((event, emit) async {
+      emit(AuthResetLoading());
+      try {
+         await _authRepository.verifyPin(
+            event.email,event.otp); 
+          emit(AuthResetEmailVerified());
+      } catch (e) {
+        emit(AuthResetEmailUnverified(error: e.toString()));
+      }
+    });
   }
+
 }

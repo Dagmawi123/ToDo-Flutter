@@ -124,7 +124,7 @@ class _LoginPageState extends State<LoginPage> {
                         Navigator.push(context, MaterialPageRoute(builder: (context)=>const EmailEntry()));
                       },
                       child: const Text(
-                        "Forget Password?",
+                        "Forgot Password?",
                         style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,

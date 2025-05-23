@@ -35,6 +35,14 @@ class AuthRepository {
     }
   }
 
+  Future<void> verifyPin(String email, String otp) async {
+    try {
+      await _authRemote.verifyPin(email: email,pin:int.parse(otp));
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   // Future<void> signOut() async {
   //   try {
   //     await _firebaseAuth.signOut();

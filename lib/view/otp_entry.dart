@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
+import 'package:todo_app/view_model/auth_bloc/auth_bloc.dart';
+import 'package:todo_app/view_model/auth_bloc/auth_event.dart';
 
 class VerificationPage extends StatefulWidget {
-  const VerificationPage({super.key});
+  final String email;
+  const VerificationPage({super.key, required this.email});
 
   @override
   State<VerificationPage> createState() => _VerificationPageState();
 }
 
 class _VerificationPageState extends State<VerificationPage> {
+  late String otp;
   int timer = 60;
   @override
   void initState() {
@@ -23,9 +28,9 @@ class _VerificationPageState extends State<VerificationPage> {
         body: Container(
           height: double.infinity,
           padding: EdgeInsets.all(0),
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
               image: DecorationImage(
-                  image: const AssetImage("assets/images/bwfishes.jpg"),
+                  image: AssetImage("assets/images/bwfishes.jpg"),
                   fit: BoxFit.cover)),
           child: Stack(children: [
             Padding(
@@ -81,9 +86,9 @@ class _VerificationPageState extends State<VerificationPage> {
                         fontWeight: FontWeight.w800,
                         fontFamily: 'Comic Sans MS',
                       )),
-                  const Text(
-                    "dagmassefa@gmail.com",
-                    style: TextStyle(
+                    Text(
+                    widget.email,
+                    style: const TextStyle(
                       fontSize: 12,
                       color: Color.fromARGB(255, 184, 13, 13),
                       fontWeight: FontWeight.bold,
@@ -91,9 +96,12 @@ class _VerificationPageState extends State<VerificationPage> {
                   ),
                   const SizedBox(height: 20),
                   OtpTextField(
+                    onSubmit: (value) => {otp=value},
+                    cursorColor: Colors.black,
                       fieldWidth: 35,
                       fieldHeight: 50,
-                      numberOfFields: 4,
+                      autoFocus: true,
+                      numberOfFields: 6,
                       showFieldAsBox: true,
                       focusedBorderColor: Colors.brown,
                       borderColor: const Color(0xFF512DA8)),
@@ -108,6 +116,9 @@ class _VerificationPageState extends State<VerificationPage> {
                               timer = 60;
                             });
                             tick();
+                            BlocProvider.of<AuthBloc>(context).add(
+                                      AuthResetPasswordEvent(
+                                          email: widget.email));
                           },
                     child: timer > 0
                         ? Text("Resend the code in $timer s",
@@ -119,7 +130,7 @@ class _VerificationPageState extends State<VerificationPage> {
                         : const Text(
                             "Resend Code",
                             style: TextStyle(
-                              color: Colors.blue,
+                              color: Color.fromARGB(255, 255, 255, 255),
                               fontSize: 13,
                               fontFamily: 'Comic Sans MS',
                             ),
@@ -135,7 +146,9 @@ class _VerificationPageState extends State<VerificationPage> {
                 child: SizedBox(
                   height: 40,
                   child: ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        BlocProvider.of<AuthBloc>(context).add(AuthPinVerifyEvent(otp: otp, email: widget.email));
+                      },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color.fromARGB(255, 107, 53, 49),
                         foregroundColor: Colors.white, // Text color

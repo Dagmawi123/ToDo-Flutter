@@ -119,7 +119,11 @@ class _EmailEntryState extends State<EmailEntry> {
                       child: BlocConsumer<AuthBloc,AuthState>(
                         listener: (context, state) {
                           if(state is AuthResetEmailSent){
-                            Navigator.push(context, MaterialPageRoute(builder:(context)=>VerificationPage()));
+                            Navigator.pop(context); 
+                            Navigator.push(context, MaterialPageRoute(builder:(context)=>VerificationPage(email: _emailController.text,)));
+                          }
+                          else if(state is AuthResetFailure){
+                            ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
                           }
                         },
                         builder: (context, state) {
