@@ -11,22 +11,33 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthLoginEvent>((event, emit) async {
       emit(AuthSignInLoading());
       try {
-        final user = await _authRepository.signInWithEmail(
-            event.email, event.password);
-        emit(AuthSuccess(user: user));
+        final user =
+            await _authRepository.signInWithEmail(event.email, event.password);
+        emit(AuthLoginSuccess(user: user));
       } catch (e) {
-        emit(AuthFailure(error: e.toString()));
+        emit(AuthLoginFailure(error: e.toString()));
       }
     });
     on<AuthRegisterEvent>((event, emit) async {
       emit(AuthSignUpLoading());
       try {
         final user = await _authRepository.createUserWithEmail(
-            event.email, event.password,event.name);
-            //check the effect of this thing on both pages 
-        emit(AuthSuccess(user: user));
+            event.email, event.password, event.name);
+        //check the effect of this thing on both pages
+        emit(AuthRegisterSuccess(user: user));
       } catch (e) {
-        emit(AuthFailure(error: e.toString()));
+        emit(AuthRegisterFailure(error: e.toString()));
+      }
+    });
+
+    on<AuthResetPasswordEvent>((event, emit) async {
+      emit(AuthResetLoading());
+      try {
+         await _authRepository.resetWithEmail(
+            event.email,); 
+          emit(AuthResetEmailSent());
+      } catch (e) {
+        emit(AuthResetFailure(error: e.toString()));
       }
     });
   }

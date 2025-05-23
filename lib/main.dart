@@ -1,7 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:todo_app/data/auth_remote.dart'; 
 import 'package:firebase_core/firebase_core.dart';
+import 'package:todo_app/view/login.dart';
 import 'package:todo_app/view/sign_up.dart';
 import 'package:todo_app/view_model/auth_bloc/auth_bloc.dart';
 import 'package:todo_app/view_model/repository/auth_repository.dart';
@@ -14,17 +16,10 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: MultiRepositoryProvider(
+  Dio dio=Dio();
+  runApp( MultiRepositoryProvider(
           providers: [
-            RepositoryProvider(create: (context) => AuthRemote()),
+            RepositoryProvider(create: (context) => AuthRemote(dio: dio)),
             RepositoryProvider(
                 create: (context) =>
                     AuthRepository(authRemote: context.read<AuthRemote>())),
@@ -35,7 +30,15 @@ class MyApp extends StatelessWidget {
                       create: (context) => AuthBloc(
                           authRepository: context.read<AuthRepository>()),
                     ),
-                  ], child: SignUpPage()))),
+                  ], child: const MyApp()))));
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: LoginPage(),
       theme: ThemeData(
         primarySwatch: Colors.yellow, // Set the primary swatch color
       ),

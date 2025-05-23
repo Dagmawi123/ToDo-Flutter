@@ -1,11 +1,13 @@
-import 'package:flutter/material.dart'; 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:todo_app/view/reset_email_entry.dart';
+import 'package:todo_app/view/sign_up.dart';
 import 'package:todo_app/view_model/auth_bloc/auth_bloc.dart';
 import 'package:todo_app/view_model/auth_bloc/auth_event.dart';
 import 'package:todo_app/view_model/auth_bloc/auth_states.dart';
 
-class LoginPage extends StatefulWidget { 
-  LoginPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -14,13 +16,14 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   bool _passVisible = false;
-  TextEditingController _emailController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
-bool isValidEmail(String email) {
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool isValidEmail(String email) {
     final emailRegex =
         RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
     return emailRegex.hasMatch(email);
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -68,15 +71,14 @@ bool isValidEmail(String email) {
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
-                  prefixIcon: Icon(Icons.email),
+                  prefixIcon: const Icon(Icons.email),
                   hintText: "Enter your email",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(7),
                   ),
                 ),
                 validator: (value) {
-                  if (value == null || value.isEmpty||
-                      !isValidEmail(value)) {
+                  if (value == null || value.isEmpty || !isValidEmail(value)) {
                     return 'Please enter valid email';
                   }
                   return null;
@@ -117,7 +119,10 @@ bool isValidEmail(String email) {
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.pop(context);
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>const EmailEntry()));
+                      },
                       child: const Text(
                         "Forget Password?",
                         style: TextStyle(
@@ -130,7 +135,7 @@ bool isValidEmail(String email) {
               const SizedBox(
                 height: 10,
               ),
-              BlocConsumer<AuthBloc,AuthState>(builder: (context, state) {
+              BlocConsumer<AuthBloc, AuthState>(builder: (context, state) {
                 if (state is AuthSignInLoading) {
                   return SizedBox(
                       width: double.infinity,
@@ -187,23 +192,24 @@ bool isValidEmail(String email) {
                           child: const Text("Login")));
                 }
               }, listener: (context, state) {
-                if (state is AuthFailure) {
+                if (state is AuthLoginFailure) {
                   ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                     content: Text(state.error),
                     backgroundColor: Colors.red,
                   ));
-                } else if (state is AuthSuccess) {
+                } else if (state is AuthLoginSuccess) {
                   showDialog(
-  context: context,
-  builder: (context) => AlertDialog(
-    title: Text("Login Successful"),
-    content: Text("Welcome back!"),
-    actions: [
-      TextButton(onPressed: () => Navigator.pop(context), child: Text("OK")),
-    ],
-  ),
-);
-
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text("Login Successful"),
+                      content: const Text("Welcome back!"),
+                      actions: [
+                        TextButton(
+                            onPressed: () => Navigator.pop(context),
+                            child: const Text("OK")),
+                      ],
+                    ),
+                  );
                 }
               }),
               const Padding(
@@ -257,6 +263,14 @@ bool isValidEmail(String email) {
                   ),
                 ),
                 GestureDetector(
+                  onTap: () {
+                    Navigator.pop(context);
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const SignUpPage(),
+                        ));
+                  },
                   child: const Text(
                     "Sign Up",
                     style: TextStyle(

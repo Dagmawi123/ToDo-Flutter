@@ -10,11 +10,27 @@ class AuthSignInLoading extends AuthState {
 }
 class AuthSignUpLoading extends AuthState { 
 }
-class AuthSuccess extends AuthState { 
+class AuthRegisterSuccess extends AuthState { 
   final UserModel? user;
-  AuthSuccess({required this.user});
+  AuthRegisterSuccess({required this.user});
 }
-class AuthFailure extends AuthState { 
+class AuthLoginSuccess extends AuthState { 
+  final UserModel? user;
+  AuthLoginSuccess({required this.user});
+}
+class AuthLoginFailure extends AuthState { 
   final String error;
-  AuthFailure({required this.error});
+  AuthLoginFailure({required this.error});
+}
+class AuthRegisterFailure extends AuthState { 
+  final String error;
+  AuthRegisterFailure({required this.error});
+}
+class AuthResetLoading extends AuthState { 
+}
+class AuthResetFailure extends AuthState { 
+  final String error;
+  AuthResetFailure({required this.error});
+}
+class AuthResetEmailSent extends AuthState { 
 }

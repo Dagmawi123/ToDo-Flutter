@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:todo_app/view/login.dart';
 import 'package:todo_app/view_model/auth_bloc/auth_bloc.dart';
 import 'package:todo_app/view_model/auth_bloc/auth_event.dart';
 import 'package:todo_app/view_model/auth_bloc/auth_states.dart';
@@ -32,9 +33,9 @@ class _SignUpPageState extends State<SignUpPage> {
     return Scaffold(
       body: SafeArea(
           child: SingleChildScrollView(
-            child: Padding(
-                    padding: const EdgeInsets.only(left: 20, right: 20),
-                    child: Form(
+        child: Padding(
+          padding: const EdgeInsets.all(20),
+          child: Form(
             key: _formKey,
             autovalidateMode: AutovalidateMode.onUserInteraction,
             child: Column(
@@ -101,7 +102,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
                   validator: (value) {
-                    if (value == null || value.isEmpty || !isValidEmail(value)) {
+                    if (value == null ||
+                        value.isEmpty ||
+                        !isValidEmail(value)) {
                       return 'Please enter a valid email';
                     }
                     return null;
@@ -171,10 +174,10 @@ class _SignUpPageState extends State<SignUpPage> {
                   height: 10,
                 ),
                 BlocConsumer<AuthBloc, AuthState>(listener: (context, state) {
-                  if (state is AuthFailure) {
+                  if (state is AuthRegisterFailure) {
                     ScaffoldMessenger.of(context)
                         .showSnackBar(SnackBar(content: Text(state.error)));
-                  } else if (state is AuthSuccess) {
+                  } else if (state is AuthRegisterSuccess) {
                     showDialog(
                       context: context,
                       builder: (context) => AlertDialog(
@@ -194,14 +197,10 @@ class _SignUpPageState extends State<SignUpPage> {
                         width: double.infinity,
                         height: 50,
                         child: ElevatedButton(
-                            onPressed: () {
-                              context.read<AuthBloc>().add(AuthRegisterEvent(
-                                  name: _nameController.text,
-                                  email: _emailController.text,
-                                  password: _passController.text));
-                            },
+                            onPressed: null,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                              backgroundColor:
+                                  const Color.fromARGB(255, 0, 0, 0),
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(7),
@@ -223,7 +222,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                   password: _passController.text));
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(255, 0, 0, 0),
+                              backgroundColor:
+                                  const Color.fromARGB(255, 0, 0, 0),
                               foregroundColor: Colors.white,
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(7),
@@ -283,6 +283,14 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
                   GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => LoginPage(),
+                          ));
+                    },
                     child: const Text(
                       "LOGIN",
                       style: TextStyle(
@@ -295,9 +303,9 @@ class _SignUpPageState extends State<SignUpPage> {
                 ])
               ],
             ),
-                    ),
-                  ),
-          )),
+          ),
+        ),
+      )),
     );
   }
 }

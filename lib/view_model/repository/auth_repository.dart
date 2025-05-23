@@ -18,9 +18,18 @@ class AuthRepository {
   Future<UserModel> createUserWithEmail(
       String email, String password, String name) async {
     try {
-      var userFB = await _authRemote.register(email: email, password: password,name: name);
+      var userFB = await _authRemote.register(
+          email: email, password: password, name: name);
       UserModel user = UserModel.fromFirebaseUser(userFB);
       return user;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> resetWithEmail(String email) async {
+    try {
+      await _authRemote.sendResetEmail(email: email);
     } catch (e) {
       rethrow;
     }
