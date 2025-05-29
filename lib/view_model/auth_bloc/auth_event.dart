@@ -24,3 +24,8 @@ class AuthPinVerifyEvent extends AuthEvent {
   final String otp;
   AuthPinVerifyEvent({required this.otp, required this.email});
 }
+class AuthNewEmailEvent extends AuthEvent {
+  final String email; 
+  final String password;
+  AuthNewEmailEvent({ required this.email,  required this.password});
+}

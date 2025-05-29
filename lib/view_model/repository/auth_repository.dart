@@ -37,7 +37,15 @@ class AuthRepository {
 
   Future<void> verifyPin(String email, String otp) async {
     try {
-      await _authRemote.verifyPin(email: email,pin:int.parse(otp));
+      await _authRemote.verifyPin(email: email, pin: int.parse(otp));
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> resetEmail(String email,String password) async {
+    try {
+      await _authRemote.resetPassword(email,password);
     } catch (e) {
       rethrow;
     }

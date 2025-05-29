@@ -37,7 +37,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             event.email,); 
           emit(AuthResetEmailSent());
       } catch (e) {
-        emit(AuthResetFailure(error: e.toString()));
+        emit(AuthResetEmailFailure(error: e.toString()));
       }
     });
   on<AuthPinVerifyEvent>((event, emit) async {
@@ -50,6 +50,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthResetEmailUnverified(error: e.toString()));
       }
     });
+   on<AuthNewEmailEvent>((event, emit) async {
+      emit(AuthResetLoading());
+      try {
+         await _authRepository.resetEmail(event.email,
+            event.password); 
+          emit(AuthResetSuccessfully());
+      } catch (e) {
+        emit(AuthResetFailure(error: e.toString()));
+      }
+    });
+  
   }
 
+  
 }

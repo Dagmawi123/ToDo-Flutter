@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:todo_app/view/reset_email_entry.dart';
 import 'package:todo_app/view_model/auth_bloc/auth_bloc.dart';
 import 'package:todo_app/view_model/auth_bloc/auth_event.dart';
+import 'package:todo_app/view_model/auth_bloc/auth_states.dart';
 
 class VerificationPage extends StatefulWidget {
   final String email;
@@ -139,31 +142,47 @@ class _VerificationPageState extends State<VerificationPage> {
                 ],
               ),
             ),
-            Positioned(
-                bottom: 50,
-                left: 10,
-                right: 10,
-                child: SizedBox(
-                  height: 40,
-                  child: ElevatedButton(
-                      onPressed: () {
-                        BlocProvider.of<AuthBloc>(context).add(AuthPinVerifyEvent(otp: otp, email: widget.email));
-                      },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color.fromARGB(255, 107, 53, 49),
-                        foregroundColor: Colors.white, // Text color
-                        shape: RoundedRectangleBorder(
-                          borderRadius:
-                              BorderRadius.circular(10.0), // Rounded corners
+            BlocConsumer<AuthBloc,AuthState>(
+              listener:(context,state){
+                if(state is AuthResetEmailUnverified){
+                  ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
+                }
+                else if(state is AuthResetEmailVerified){
+                  Navigator.pop(context);
+                  Navigator.push(context, MaterialPageRoute(builder: (context)=>EmailEntry()));
+                }
+              } ,
+              builder: (context,state){
+                 return Positioned(
+                  bottom: 50,
+                  left: 10,
+                  right: 10,
+                  child: SizedBox(
+                    height: 40,
+                    child: ElevatedButton(
+                        onPressed:state is AuthResetLoading?null: () {
+                          BlocProvider.of<AuthBloc>(context).add(AuthPinVerifyEvent(otp: otp, email: widget.email));
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color.fromARGB(255, 107, 53, 49),
+                          foregroundColor: Colors.white, // Text color
+                          shape: RoundedRectangleBorder(
+                            borderRadius:
+                                BorderRadius.circular(10.0), // Rounded corners
+                          ),
                         ),
-                      ),
-                      child: const Text(
-                        "Verify",
-                        style: TextStyle(
-                            fontFamily: 'Comic Sans MS',
-                            fontWeight: FontWeight.bold),
-                      )),
-                ))
+                        child:state is AuthResetLoading? const SpinKitThreeInOut(color: Colors.white,): const Text(
+                          "Verify",
+                          style: TextStyle(
+                              fontFamily: 'Comic Sans MS',
+                              fontWeight: FontWeight.bold),
+                        )),
+                  ));
+                
+              },
+              
+
+            )
           ]),
         ),
       ),
